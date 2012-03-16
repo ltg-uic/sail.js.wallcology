@@ -2,7 +2,7 @@ var sail = require('./js/sail.js/sail.node.server.js')
 
 var url = require('url')
 
-var UIC_MICROWORLDS_URL = "http://ltg.evl.uic.edu:80/"
+var UIC_MICROWORLDS_URL = "http://phenomena.evl.uic.edu:80/"
 
 sail.server.proxyMap.unshift(
     {

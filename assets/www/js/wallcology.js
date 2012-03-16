@@ -1551,7 +1551,7 @@ WallCology = {
 			$.ajax({
 				type: "GET",      
 				dataType: "json",
-				url: "/uic/gugo/wc_micro/micro.php",
+				url: "/uic/wc_micro/micro.php",
 				data: {temp: temperature, light: lightLevel, humid: humidity, scum: scumCount, fuzz: fuzzyMoldCount, se: blueBugCount, fe: greenBugCount, pred: predatorCount},
 				// data: {temp: temperature, light: lightLevel, humid: humidity, scum: scumCount, fuzz: "63", se: "20", fe: "15", pred: "0"},
 				context: this,
