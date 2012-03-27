@@ -818,8 +818,10 @@
 		
 			<div id="new-counts">
 				<img class="new-counts-image" src="/images/new_count.png" />
-				<div class="divider"></div>
 				
+				<button class="edit-button action-buttons counts-button">EDIT PREVIOUS COUNT</button>		
+				
+				<div class="divider"></div>
 				<div class="select-habitat-title">
 					<h3>Habitat Number</h3>
 				</div>
@@ -869,8 +871,8 @@
 							<th> <img src="/images/icon_0000_blue-bug.png" class="image"/> </th>
 							<th> <img src="/images/icon_0008_green-bug.png" class="image"/></th>
 							<th> <img src="/images/icon_0005_predator.png" class="image predator-reveal"/></th>
-							<th> Time</th> 
-							<th> Date</th> 
+							<!--<th> Time</th>--> 
+							<!--<th> Date</th> -->
 						</tr> 
 						
 						<tr>
@@ -880,8 +882,8 @@
 						    <td> <input type="number" class="count-organism-data-cell count-blue-bug1" /> </td>
 							<td> <input type="number" class="count-organism-data-cell count-green-bug1" /> </td>
 							<td> <input type="number" class="count-organism-data-cell count-predator1 predator-reveal" /> </td>
-							<td> <input type="number" class="count-organism-data-cell count1-time" /> </td>
-							<td> <input type="text" class="table-date-adjuster count-organism-data-cell new-counts-datepicker count-date" /> </td>							
+							<!--<td> <input type="number" class="count-organism-data-cell count1-time" /> </td>-->
+							<!--<td> <input type="text" class="table-date-adjuster count-organism-data-cell new-counts-datepicker count-date" /> </td>	-->						
 						</tr>
 						
 						<tr>
@@ -891,20 +893,20 @@
 						    <td> <input type="number" class="count-organism-data-cell count-blue-bug2" /> </td>
 							<td> <input type="number" class="count-organism-data-cell count-green-bug2" /> </td>
 							<td> <input type="number" class="count-organism-data-cell count-predator2 predator-reveal" /> </td>
-							<td> <input type="number" class="count-organism-data-cell count2-time" /> </td>
+							<!--<td> <input type="number" class="count-organism-data-cell count2-time" /> </td>-->
 							<td> </td>
 						</tr>
-						
+						<!--
 						<tr>
 							<td> Count 3</td>
 							<td> </td>
 							<td> </td>
 						    <td> <input type="number" class="count-organism-data-cell count-blue-bug3" /> </td>
 							<td> <input type="number" class="count-organism-data-cell count-green-bug3" /> </td>
-							<td> <input type="number" class="count-organism-data-cell count-predator3 predator-reveal" /> </td>
-							<td> <input type="number" class="count-organism-data-cell count3-time" /> </td>
-							<td> </td>
-						</tr>  
+							<td> <input type="number" class="count-organism-data-cell count-predator3 predator-reveal" /> </td>-->
+							<!--<td> <input type="number" class="count-organism-data-cell count3-time" /> </td>-->
+							<!--<td> </td>
+						</tr>  -->
 											
 						<tr>
 							<td> Average</td>
@@ -917,11 +919,18 @@
 						
 						<tr>
 							<td> Multiplier</td>
+							<!--
 							<td class="dotted-top-border"> <input type="number" class="count-organism-data-cell count-mold5" /> </td>						
 							<td class="dotted-top-border"> <input type="number" class="count-organism-data-cell count-scum5" /> </td>						
 						    <td class="dotted-top-border"> <input type="number" class="count-organism-data-cell count-blue-bug5" /> </td>
 							<td class="dotted-top-border"> <input type="number" class="count-organism-data-cell count-green-bug5" /> </td>
 							<td class="dotted-top-border"> <input type="number" class="count-organism-data-cell count-predator5 predator-reveal" /> </td>
+							-->
+							<td class="dotted-top-border"> <input type="number" class="count-organism-data-cell count-mold5" id="moldM" value="" readonly="readonly" disabled="disabled" /> </td>						
+							<td class="dotted-top-border"> <input type="number" class="count-organism-data-cell count-scum5" id="scumM" value="" readonly="readonly" disabled="disabled" /> </td>						
+						    <td class="dotted-top-border"> <input type="number" class="count-organism-data-cell count-blue-bug5" id="blueM" value="" readonly="readonly" disabled="disabled" /> </td>
+							<td class="dotted-top-border"> <input type="number" class="count-organism-data-cell count-green-bug5" id="greenM" value="" readonly="readonly" disabled="disabled" /> </td>
+							<td class="dotted-top-border"> <input type="number" class="count-organism-data-cell count-predator5 predator-reveal" id="predM" value="" readonly="readonly" disabled="disabled" /> </td>
 						</tr>
 						
 						<tr>

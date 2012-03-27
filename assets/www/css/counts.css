@@ -141,6 +141,11 @@
 	margin-right: 60px;
 }
 
+#new-counts .edit-button {
+	margin-top: 60px;
+	margin-left: 280px;
+}
+
 #new-counts .save-button {
 	margin-top: 60px;
 	margin-left: 380px;
