@@ -739,6 +739,11 @@ WallCology = {
 			   //alert("Retrieving mongodbID:" +mongodbID)
 			   $('#new-counts .save-button').html("<span class= \"ui-button-text\">UPDATE</span")
 			   Sail.app.observations.retrievePreviousCount()
+			   
+			   if(!$('#new-counts .count-light').val()){//unable to load previous count
+				   $('#new-counts .save-button').html("<span class= \"ui-button-text\">SAVE</span")
+			   }
+			   
 			   Sail.app.observations.newCountsContent("changed_observation",mongodbID, "count_old")
 			            							
 			})
