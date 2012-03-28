@@ -1,3 +1,9 @@
+var showPredator = false;
+var hab1Multiplier = 2;
+var hab2Multiplier =3;
+var hab3Multiplier =4;
+var hab4Multiplier =1;
+
 WallCology = {
     /** Reverse-proxied URLs for rollcall and sleepy mongoose services. */
     rollcallURL: '/rollcall',
@@ -8,13 +14,12 @@ WallCology = {
 
 	// to store graph data and use it to draw and re-draw graphs via trigger
 	countsGraphData: null,
-	previousCount: null,
-    
+	
     init: function() {
         console.log("Initializing...")
         var date
         var time
-                            
+                
         Sail.app.run = JSON.parse($.cookie('run'))
         
         Sail.modules
@@ -47,6 +52,7 @@ WallCology = {
                             Sail.app.run = data.run
                             $.cookie('run', JSON.stringify(Sail.app.run))
                             location.href = '/observations.html'
+                            	
                         })
                     })
                 })
@@ -67,6 +73,12 @@ WallCology = {
             $('#tabs').show()
             $('#tabs').tabs({ selected: 0 });			// for testing, sets default open tab
             var $tabs = $('#tabs').tabs()
+          	
+     	   if(showPredator==true){
+        			$('.predator-reveal').show()
+        		}else{
+        			$('.predator-reveal').hide()
+            }
             
             // initial context
             $(Sail.app).trigger('context_switch', {
@@ -132,9 +144,8 @@ WallCology = {
             	else {
             		console.log('what tab are you clicking on?!')
             	}
-    		})
+        	})
             
-
             $('#new-habitat').hide()
 			$('#what-others-said-habitat').hide()  
             $('#open-habitat').show()
@@ -155,7 +166,7 @@ WallCology = {
 
             $('.jquery-radios').buttonset()
                        
-            
+       
 // **********NEW HABITAT*****************************************************************************************
 
             $('#new-habitat .back-button').click(function(){
@@ -611,6 +622,13 @@ WallCology = {
             $('#landing-counts .new-button').click(function() {                
             	$('#landing-counts').hide()
             	$('#new-counts').show()
+            	
+            	// clear fields
+				$('#new-counts .text-box').val('') 
+				$('#new-counts .count-organism-data-cell').val('')
+				$("input:radio").prop('checked', false)
+				$('#new-counts .radio-button').button('refresh')	
+            	$('#new-counts .save-button').html("<span class= \"ui-button-text\">SAVE</span")
             })
             $('#landing-counts .view-button').click(function() {				
             	$('#landing-counts').hide()
@@ -641,15 +659,15 @@ WallCology = {
 				var chosenHabitat = $('input:radio[name=new-counts-select-habitat]:checked').val()
             	var habitatMultiplier
 				
-            	//Set habitat multiplier manually 
+            	//SET habitat multiplier manually *********************************************
 				if(chosenHabitat == 1){
-					habitatMultiplier = 8
+					habitatMultiplier = hab1Multiplier
 				}else if(chosenHabitat == 2){
-					habitatMultiplier = 7
+					habitatMultiplier = hab2Multiplier
 				}else if(chosenHabitat == 3){
-					habitatMultiplier = 6
+					habitatMultiplier = hab3Multiplier
 				}else if(chosenHabitat == 4){
-					habitatMultiplier = 3
+					habitatMultiplier = hab4Multiplier
 				}
 								
             	var moldMultiplier = habitatMultiplier
@@ -671,48 +689,63 @@ WallCology = {
 			   var year = currentDate.getFullYear()
 			   time = currentDate.getTime()
 			   date = month + "/" + day + "/" + year
+			   
+			   var predatorEntered=false
 			   // check if the required fields are filled before submitting
-				if ( $('.counts-habitat-radio-button').is(':checked') && $('#new-counts .count-temperature').val() 
+			   if(showPredator==true && $('#new-counts .count-predator6').val()
+					   ||showPredator==false ){
+				   predatorEntered =true
+			   }
+			   if ( $('.counts-habitat-radio-button').is(':checked') && $('#new-counts .count-temperature').val() 
 						&& $('#new-counts .count-light').val() && $('#new-counts .count-humidity').val() &&
 						$('#new-counts .count-scum6').val() && $('#new-counts .count-mold6').val() &&
 						$('#new-counts .count-blue-bug6').val() && $('#new-counts .count-green-bug6').val()
-						// COMMENT OUT NEXT LINE FOR PREDATOR REVEAL predator-reveal
-						//&& $('#new-counts .count-predator6').val()
+						&& predatorEntered
 						) 
 					{
 					
+					
+					mongodbID = Math.floor((Math.random() * 1e50)).toString(36);  
+					Sail.app.observations.newCountsContent("new_observation",mongodbID, "count")
+					
 					if( $('#new-counts .save-button').text()=="UPDATE"){
-						Sail.app.observations.newCountsContent("changed_observation",mongodbID)
-						alert("MongodbID:" +mongodbID)
+						//alert("Updated MongodbID:" +mongodbID)
 						alert("Update submitted")
-					}
-					else{
-						mongodbID = Math.floor((Math.random() * 1e50)).toString(36);  
-						alert("MongodbID:" +mongodbID)
-						Sail.app.observations.newCountsContent("new_observation",mongodbID)
+					}else{
+						//alert("MongodbID:" +mongodbID)
 						alert("Count submitted")
 					}
-            		
+						
+					// clear fields
+					$('#new-counts .text-box').val('') 
+					$('#new-counts .count-organism-data-cell').val('')
+					$("input:radio").prop('checked', false)
+					$('#new-counts .radio-button').button('refresh')	
+					$('#new-counts .save-button').html("<span class= \"ui-button-text\">SAVE</span")
+			
+        		
             		$('#new-counts').hide()
             		$('#landing-counts').show()
+					
+					
             	}
 	            else {
 	            	alert("Record habitat, temperature, light levels, humidity and organism totals")
-	            }							
+	            }
+			   
+			   
 			})
 			$('#new-counts .edit-button').click(function() {
-		       //Retrieve previous timestamp
-			
-			   alert("Edit mongodbID:" +mongodbID)
+			   //alert("Retrieving mongodbID:" +mongodbID)
 			   $('#new-counts .save-button').html("<span class= \"ui-button-text\">UPDATE</span")
 			   Sail.app.observations.retrievePreviousCount()
-			  // Sail.app.observations.newCountsContent('changed_observation', mongodbID)
-			  // $('#new-counts').hide()
-			  // $('#landing-counts').show()
 			   
-			   // reset data 
-			   WallCology.previousCount = null
-	         							
+			   if(!$('#new-counts .count-light').val()){//unable to load previous count
+				   $('#new-counts .save-button').html("<span class= \"ui-button-text\">SAVE</span")
+			   }
+			   
+			   Sail.app.observations.newCountsContent("changed_observation",mongodbID, "count_old")
+			            							
 			})
 			$('#new-counts .back-button').click(function() {                
             	$('#new-counts').hide()
@@ -1574,13 +1607,12 @@ WallCology = {
 						    		
 						    		//Light, temp, humidity, habitat
 						    		var habitatID="new-count-r"+returnedCountData[0].chosen_habitat
-						    		alert("chosen hab: "+ habitatID)
 						    		$('#new-counts .count-temperature').val(returnedCountData[0].temperature) 
 									$('#new-counts .count-light').val(returnedCountData[0].light_level)
 									$('#new-counts .count-humidity').val(returnedCountData[0].humidity)
 						    		document.getElementById(habitatID).checked=true
-									alert("checked radio:" +$('input:radio[name=new-counts-select-habitat]:checked').val())
-						    		$('input:radio[name=new-counts-select-habitat]:checked').click()
+									$('input:radio[name=new-counts-select-habitat]:checked').click()
+						    		$('.jquery-radios').buttonset()
 						    		
 						    		//COUNTS
 						    		$('#new-counts .count-scum').val(counts.scum.count1)
@@ -1936,9 +1968,9 @@ WallCology = {
 	        WallCology.groupchat.sendEvent(sev)
 		},
 	
-        newCountsContent: function(eventType, mongodbID) {
+        newCountsContent: function(eventType, mongodbID, countType) {
 	        sev = new Sail.Event(eventType, {
-	        	type:'count',
+	        	type: countType,
 	        	_id : mongodbID,
 	        	chosen_habitat:$('input:radio[name=new-counts-select-habitat]:checked').val(),
 	        	light_level:$('#new-counts .count-light').val(),
@@ -1994,11 +2026,7 @@ WallCology = {
 			})
 
 	        WallCology.groupchat.sendEvent(sev)
-	        // clear fields
-	        $('#new-counts .text-box').val('') 
-			$('#new-counts .count-organism-data-cell').val('')
-	        $("input:radio").prop('checked', false)
-	        $('#new-counts .radio-button').button('refresh')	        
+	                
         },
 
     },
@@ -2177,8 +2205,11 @@ WallCology = {
 				predatorForGraph = _.reject(predatorForGraph, function(val){ return val == undefined; })	
 				
 				// REVEAL FOR PREDATOR predator-reveal
+				if(showPredator==false){
 				var creatures = [ {label: "green_bug", data: greenBugForGraph, color: "green"}, {label:"blue_bug", data: blueBugForGraph, color: "blue"} ]
-				//var creatures = [ {label: "green_bug", data: greenBugForGraph, color: "green"}, {label:"blue_bug", data: blueBugForGraph, color: "blue"}, {label:"predator", data: predatorForGraph, color: "black"} ]
+				}else{
+					var creatures = [ {label: "green_bug", data: greenBugForGraph, color: "green"}, {label:"blue_bug", data: blueBugForGraph, color: "blue"}, {label:"predator", data: predatorForGraph, color: "black"} ]
+				}
 				
 				// average values for temperature
 				temperature = Sail.app.observations.avgCountValues(temperature)
