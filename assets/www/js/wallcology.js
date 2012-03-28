@@ -3,6 +3,40 @@ var hab1Multiplier = 2;
 var hab2Multiplier =3;
 var hab3Multiplier =4;
 var hab4Multiplier =1;
+var mongodbID = null;
+
+//Storage of Previous Count Data for change_observation
+var prev__id = null;
+var prev_chosen_habitat = null;
+var prev_light_level = null;
+var prev_temperature = null;
+var prev_humidity = null;
+var prev_date = null;
+var prev_multiplier =null;
+
+var mold_count1 = null;       			
+var mold_final_count = null;
+
+var scum_count1 = null;        			
+var scum_final_count = null;
+
+var blue_bug_count1 = null;
+var blue_bug_count2 = null;
+var blue_bug_average = null;
+var blue_bug_final_count = null;
+
+var green_bug_count1 = null;
+var green_bug_count2 = null;
+var green_bug_average = null;
+var green_bug_final_count = null;
+
+var predator_count1 = null;
+var predator_count2 = null;
+var predator_average = null;
+var predator_final_count = null;
+
+var count1_time = null;
+var count2_time = null;
 
 WallCology = {
     /** Reverse-proxied URLs for rollcall and sleepy mongoose services. */
@@ -706,10 +740,11 @@ WallCology = {
 					
 					
 					mongodbID = Math.floor((Math.random() * 1e50)).toString(36);  
-					Sail.app.observations.newCountsContent("new_observation",mongodbID, "count")
+					Sail.app.observations.newCountsContent(mongodbID)
 					
 					if( $('#new-counts .save-button').text()=="UPDATE"){
 						//alert("Updated MongodbID:" +mongodbID)
+						Sail.app.observations.changeCountsContent()
 						alert("Update submitted")
 					}else{
 						//alert("MongodbID:" +mongodbID)
@@ -737,14 +772,15 @@ WallCology = {
 			})
 			$('#new-counts .edit-button').click(function() {
 			   //alert("Retrieving mongodbID:" +mongodbID)
-			   $('#new-counts .save-button').html("<span class= \"ui-button-text\">UPDATE</span")
-			   Sail.app.observations.retrievePreviousCount()
 			   
-			   if(!$('#new-counts .count-light').val()){//unable to load previous count
-				   $('#new-counts .save-button').html("<span class= \"ui-button-text\">SAVE</span")
+			   var retrievePreviousSuccess=Sail.app.observations.retrievePreviousCount()
+			   //alert("retrieve Success: " +retrievePreviousSuccess)
+			   if(retrievePreviousSuccess==true){
+				   $('#new-counts .save-button').html("<span class= \"ui-button-text\">UPDATE</span")			  
+			   }else{
+				   alert("No previous count to edit.")
 			   }
-			   
-			   Sail.app.observations.newCountsContent("changed_observation",mongodbID, "count_old")
+			 
 			            							
 			})
 			$('#new-counts .back-button').click(function() {                
@@ -1579,98 +1615,139 @@ WallCology = {
 		retrievePreviousCount: function() {
 			// we do a count REST call to determine how many results to expect
 			// (setting batch_size in _find)
-			criteria = {"run.name":Sail.app.run.name, "type":"count", "_id":mongodbID}
-			$.ajax({
-				type: "GET",
-				url: "/mongoose/wallcology/observations/_count",
-				data: {criteria: JSON.stringify(criteria)},
-				context: this,
-				success: function(data) {
-					criteria = {"run.name":Sail.app.run.name, "type":"count", "_id":mongodbID}
-					this.criteria = criteria
-			    	if (data.ok === 1) {			    		
-						batchSize = 0
-						batchSize = data.count
-						
-						$.ajax({
-							type: "GET",
-							url: "/mongoose/wallcology/observations/_find",
-							data: { criteria: JSON.stringify(criteria), batch_size: batchSize },
-							context: this, 
-							async: false,
-							success: function(data) {								
-						    	if (data.ok === 1) {			    		
-						    		// store data in global variable
-						    		var returnedCountData = data.results
-						    		var counts=returnedCountData[0].organism_counts
-						    		
-						    		
-						    		//Light, temp, humidity, habitat
-						    		var habitatID="new-count-r"+returnedCountData[0].chosen_habitat
-						    		$('#new-counts .count-temperature').val(returnedCountData[0].temperature) 
-									$('#new-counts .count-light').val(returnedCountData[0].light_level)
-									$('#new-counts .count-humidity').val(returnedCountData[0].humidity)
-						    		document.getElementById(habitatID).checked=true
-									$('input:radio[name=new-counts-select-habitat]:checked').click()
-						    		$('.jquery-radios').buttonset()
-						    		
-						    		//COUNTS
-						    		$('#new-counts .count-scum').val(counts.scum.count1)
-						    		$('#new-counts .count-mold').val(counts.mold.count1)//mold
-						    		$('#new-counts .count-green-bug1').val(counts.green_bug.count1)//green bug 1
-						    		$('#new-counts .count-green-bug2').val(counts.green_bug.count2)//green bug 2
-						    		$('#new-counts .count-blue-bug1').val(counts.blue_bug.count1)//blue bug 1
-						    		$('#new-counts .count-blue-bug2').val(counts.blue_bug.count2)//blue bug 2
-						    		$('#new-counts .count-predator1').val(counts.predator.count1)//predator 1 
-						    		$('#new-counts .count-predator2').val(counts.predator.count2)//predator 2 
-						    		
-						    		//AVERAGE COUNTS
-						    		$('#new-counts .count-scum4').val(counts.scum.average)
-						    		$('#new-counts .count-mold4').val(counts.mold.average)
-						    		$('#new-counts .count-green-bug4').val(counts.green_bug.average)
-						    		$('#new-counts .count-blue-bug4').val(counts.blue_bug.average)
-						    		$('#new-counts .count-predator4').val(counts.predator.average)
-						    		
-						    								    		
-						    		//FINAL COUNTS
-						    		$('#new-counts .count-scum6').val(counts.scum.final_count)
-						    		$('#new-counts .count-mold6').val(counts.mold.final_count)
-						    		$('#new-counts .count-green-bug6').val(counts.green_bug.final_count)
-						    		$('#new-counts .count-blue-bug6').val(counts.blue_bug.final_count)
-						    		$('#new-counts .count-predator6').val(counts.predator.final_count)
-						    		
-						    		/**
-						    		//add temperature and habitat
-						    		document.writeln("datas ID: " + returnedCountData[0]._id)
-						    		document.writeln("data origin: " + returnedCountData[0].origin)
-						    		document.writeln("scum count: " + counts.scum.count1)//scum
-						    		document.writeln("green bug count1: " + counts.green_bug.count1)//green bug 1
-						    		document.writeln("green bug count2: " + counts.green_bug.count2)//green bug 2
-						    		document.writeln("mold count: " + counts.mold.count1)//mold
-						    		document.writeln("predator count1: " + counts.predator.count1)//predator 1 //TODO edit out
-						    		document.writeln("predator count2: " + counts.predator.count2)//predator 2 //TODO edit out
-						    		document.writeln("blue bug count1: " + counts.blue_bug.count1)//blue bug 1
-						    		document.writeln("blue bug count2: " + counts.blue_bug.count2)//blue bug 2
-						    		//add final counts
-						    		**/
-						    		
-									return true
-						    	}
-						    	else {
-						    		alert("failure")
-									console.log("Mongoose request failed")
-									return false
+			var returnval=false;
+			if(mongodbID != null){
+				criteria = {"run.name":Sail.app.run.name, "_id":mongodbID}
+				$.ajax({
+					type: "GET",
+					url: "/mongoose/wallcology/observations/_count",
+					data: {criteria: JSON.stringify(criteria)},
+					context: this,
+					async: false,
+					success: function(data) {
+						criteria = {"run.name":Sail.app.run.name, "_id":mongodbID}
+						this.criteria = criteria
+				    	if (data.ok === 1) {			    		
+							batchSize = 0
+							batchSize = data.count
+							
+							$.ajax({
+								type: "GET",
+								url: "/mongoose/wallcology/observations/_find",
+								data: { criteria: JSON.stringify(criteria), batch_size: batchSize },
+								context: this, 
+								async: false,
+								success: function(data) {								
+							    	if (data.ok === 1) {			    		
+							    		// store data in  variable
+							    		var returnedCountData = data.results
+							    		var counts=returnedCountData[0].organism_counts
+							    		var times =returnedCountData[0].organism_time
+						    		 
+							    		prev__id = mongodbID
+							    		prev_chosen_habitat = returnedCountData[0].chosen_habitat
+							    		prev_light_level = returnedCountData[0].light_level
+							    		prev_temperature = returnedCountData[0].temperature
+							    		prev_humidity = returnedCountData[0].humidity
+							    		prev_date = returnedCountData[0].date
+							    		
+							    		if(prev_chosen_habitat == 1){
+							    			prev_multiplier = hab1Multiplier
+										}else if(prev_chosen_habitat == 2){
+											prev_multiplier = hab2Multiplier
+										}else if(prev_chosen_habitat == 3){
+											prev_multiplier = hab3Multiplier
+										}else if(prev_chosen_habitat == 4){
+											prev_multiplier = hab4Multiplier
+										}
+
+							    		mold_count1 = counts.mold.count1        			
+							    		mold_final_count = counts.mold.final_count
+
+							    		scum_count1 = counts.scum.count1        			
+							    		scum_final_count = counts.scum.final_count
+
+							    		blue_bug_count1 = counts.blue_bug.count1
+							    		blue_bug_count2 = counts.blue_bug.count2
+							    		blue_bug_average = counts.blue_bug.average
+							    		blue_bug_final_count = counts.blue_bug.final_count
+
+							    		green_bug_count1 = counts.green_bug.count1
+							    		green_bug_count2 = counts.green_bug.count2
+							    		green_bug_average = counts.green_bug.average
+							    		green_bug_final_count = counts.green_bug.final_count
+
+							    		predator_count1 = counts.predator.count1
+							    		predator_count2 = counts.predator.count2
+							    		predator_average = counts.predator.average
+							    		predator_final_count = counts.predator.final_count
+
+							    		count1_time = times.count1_time
+							    		count2_time = times.count2_time
+						    		  
+						    							    		
+							    		//Light, temp, humidity, habitat
+							    		var habitatID="new-count-r"+prev_chosen_habitat
+							    		$('#new-counts .count-temperature').val(prev_temperature) 
+										$('#new-counts .count-light').val(prev_light_level)
+										$('#new-counts .count-humidity').val(prev_humidity)
+							    		document.getElementById(habitatID).checked=true
+										$('input:radio[name=new-counts-select-habitat]:checked').click()
+							    		$('.jquery-radios').buttonset()
+							    		
+							    		//COUNTS
+							    		$('#new-counts .count-scum').val(scum_count1)
+							    		$('#new-counts .count-mold').val(mold_count1)//mold
+							    		$('#new-counts .count-green-bug1').val(green_bug_count1)//green bug 1
+							    		$('#new-counts .count-green-bug2').val(green_bug_count2)//green bug 2
+							    		$('#new-counts .count-blue-bug1').val(blue_bug_count1)//blue bug 1
+							    		$('#new-counts .count-blue-bug2').val(blue_bug_count2)//blue bug 2
+							    		$('#new-counts .count-predator1').val(predator_count1)//predator 1 
+							    		$('#new-counts .count-predator2').val(predator_count2)//predator 2 
+							    		
+							    		//AVERAGE COUNTS
+							    		$('#new-counts .count-green-bug4').val(green_bug_average)
+							    		$('#new-counts .count-blue-bug4').val(blue_bug_average)
+							    		$('#new-counts .count-predator4').val(predator_average)
+							    		
+							    								    		
+							    		//FINAL COUNTS
+							    		$('#new-counts .count-scum6').val(scum_final_count)
+							    		$('#new-counts .count-mold6').val(mold_final_count)
+							    		$('#new-counts .count-green-bug6').val(green_bug_final_count)
+							    		$('#new-counts .count-blue-bug6').val(blue_bug_final_count)
+							    		$('#new-counts .count-predator6').val(predator_final_count)
+							    		
+							    		if(returnedCountData.length>0){
+							    			//alert("result count: "+ returnedCountData.length)
+							    			returnval= true
+							    		}else{
+							    			//alert("No data retrieved")
+							    			returnval= false
+							    		}
+							    	}
+							    	else {
+							    		alert("failure")
+										console.log("Mongoose request failed")
+										return false
+									}
 								}
-							}
-						})//, "json")
-			    	}
-			    	else {
-						console.log("Mongoose request failed")
-						return false
-					}
-			    }
-			})//, "json")
+							})//, "json")
+				    	}
+				    	else {
+							console.log("Mongoose request failed")
+							return false
+						}
+				    }
+				})//, "json")
+			}else{
+				//no previous mongodbID stored
+				//alert("mongodbID null")
+				returnval= false
+			}
 			
+			//alert("returnval: " +returnval)
+			return returnval
 		},
 		
 		retrieveCountsGraphData: function() {
@@ -1968,9 +2045,9 @@ WallCology = {
 	        WallCology.groupchat.sendEvent(sev)
 		},
 	
-        newCountsContent: function(eventType, mongodbID, countType) {
-	        sev = new Sail.Event(eventType, {
-	        	type: countType,
+		newCountsContent: function(mongodbID) {
+	        sev = new Sail.Event("new_observation", {
+	        	type: "count",
 	        	_id : mongodbID,
 	        	chosen_habitat:$('input:radio[name=new-counts-select-habitat]:checked').val(),
 	        	light_level:$('#new-counts .count-light').val(),
@@ -2020,8 +2097,7 @@ WallCology = {
 					//count3_time:$('#new-counts .count3-time').val()
 				
 					count1_time:time,
-					count2_time:time, 
-					count3_time:time
+					count2_time:time
 				}
 			})
 
@@ -2029,7 +2105,59 @@ WallCology = {
 	                
         },
 
+    changeCountsContent: function() {   	
+        sev = new Sail.Event("changed_observation", {
+        	type: "count_old",
+        	_id : prev__id,
+        	chosen_habitat:prev_chosen_habitat,
+        	light_level:prev_light_level,
+        	temperature:prev_temperature,
+        	humidity:prev_humidity,
+        	date:prev_date,
+        	organism_counts:{
+        		mold:{
+    	        	count1:mold_count1,	        			
+	        		multiplier:prev_multiplier,
+	        		final_count:mold_final_count
+        		},
+        		scum:{
+    	        	count1:scum_count1,	        			
+	        		multiplier:prev_multiplier,
+	        		final_count:scum_final_count
+        		},
+	        	blue_bug:{
+	        		count1:blue_bug_count1,
+	        		count2:blue_bug_count2,
+	        		average:blue_bug_average,
+	        		multiplier:prev_multiplier,
+	        		final_count:blue_bug_final_count
+				},
+	        	green_bug:{
+	        		count1:green_bug_count1,
+	        		count2:green_bug_count2,
+	        		average:green_bug_average,
+	        		multiplier:prev_multiplier,
+	        		final_count:green_bug_final_count
+				},
+	        	predator:{
+	        		count1:predator_count1,
+	        		count2:predator_count2,
+	        		average:predator_average,
+	        		multiplier:prev_multiplier,
+	        		final_count:predator_final_count
+				}
+			},
+			organism_time:{	
+				count1_time:count1_time,
+				count2_time:count2_time, 
+			}
+		})
+
+        WallCology.groupchat.sendEvent(sev)
+                
     },
+
+},
    
 // **********************************************************************************************************************************
      
