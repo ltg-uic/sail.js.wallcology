@@ -1,8 +1,8 @@
 var showPredator = false;
-var hab1Multiplier = 2;
-var hab2Multiplier =3;
-var hab3Multiplier =4;
-var hab4Multiplier =1;
+var hab1Multiplier = 0;
+var hab2Multiplier = 0;
+var hab3Multiplier = 0;
+var hab4Multiplier = 0;
 var mongodbID = null;
 
 //Storage of Previous Count Data for change_observation
@@ -2208,7 +2208,8 @@ WallCology = {
 			
 			if (resultsArray.length > 0) {
 				// Reference day will be day 0 all others will be a positive integer
-				refDay = new Date(2011,9,26)
+				// Apparently this needs to be a month before... (i.e. starting 3/26, set to 2/25)
+				refDay = new Date(2012,2,28)
 				// needed for some date math
 				day = 1000*60*60*24
 				// array for scum, mold and resulting vegetation, which is passed to plot function
