@@ -304,15 +304,15 @@ div#what-others-said-organism-lifecycle table#organism-life-cycle-table {
 
 div#what-others-said-organism-lifecycle table#organism-lifecycle-count-table-1 {
 	float: left;
-	margin-left: 35px;
+	margin-left: 5px;
 	margin-bottom: 50px;
-	width: 340px;
+	width: 300px;
 }                                                                               
 
 div#what-others-said-organism-lifecycle table#organism-lifecycle-count-table-2 {
 	float: right;  
-	margin-right: 25px;
-	width: 340px;
+	margin-right: 5px;
+	width: 300px;
 }
 
 div#what-others-said-organism-lifecycle table#organism-lifecycle-count-table-1 td {
@@ -340,6 +340,7 @@ div#what-others-said-organism-lifecycle table#organism-lifecycle-count-table-1 t
 }       
 
 div#what-others-said-organism-lifecycle table#organism-lifecycle-count-table-1 td.relationship-count {         
+	width: 40px;
 	text-align: center;
 }
 
@@ -348,6 +349,7 @@ div#what-others-said-organism-lifecycle table#organism-lifecycle-count-table-2 t
 }       
 
 div#what-others-said-organism-lifecycle table#organism-lifecycle-count-table-2 td.relationship-count {    
+	width: 40px;
 	text-align: center;
 }
                    
