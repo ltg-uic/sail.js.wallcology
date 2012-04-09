@@ -326,7 +326,7 @@ WallCology = {
 
 			// When See What Others Said is clicked, this page page should be loaded
 			$('div#open-organism #what-others-said-organism-button').click(function(){				
-			    
+				
 				$("#organism-menu-page").hide();
 				$('#new-organism').hide();                     
 				$('#describe-lifecycle-organism').hide(); 
@@ -334,9 +334,10 @@ WallCology = {
 				
 				// HACK: preselect scum - looking for more elegant solution also
 				// .css() is no good add and remove class instead
-				$('#what-others-said-about-organisms .organism-filter-selected').css('border', '1px solid black'); 
+				//$('#what-others-said-about-organisms .organism-filter-selected').css('border', '1px solid black'); 
 				$('#what-others-said-about-organisms .organism-filter').css('border', 'none'); 
-				$('#chosen-organism-filter').attr('value', 'scum');
+				//$('#chosen-organism-filter').attr('value', 'null');
+				//$('#chosen-organism-filter').attr('value', 'scum');
 				
 				// unchecking all radio buttons
 				$('input:radio[name="organism-comment-filter-set"]').attr('checked', false);
@@ -2207,9 +2208,9 @@ WallCology = {
 			resultsArray = WallCology.countsGraphData.results
 			
 			if (resultsArray.length > 0) {
-				// Reference day will be day 0 all others will be a positive integer
-				// Apparently this needs to be a month before... (i.e. starting 3/26, set to 2/25)
-				refDay = new Date(2012,2,28)
+				// Reference day will be day 0 all others will be a positive integers
+				// Apparently this is zero based for months too... (i.e. starting 3/26, set to 2/25)
+				refDay = new Date(2012,3,9)
 				// needed for some date math
 				day = 1000*60*60*24
 				// array for scum, mold and resulting vegetation, which is passed to plot function
@@ -2244,6 +2245,7 @@ WallCology = {
 		
 				// loop over array and create arrays that can be printed
 				for (i=0; i < selHabitatResults.length; i++) {
+					//alert("results " +i)
 					// date of the current dataset
 					countDate = new Date(selHabitatResults[i].timestamp)
 					// calculating date difference (positive int)
