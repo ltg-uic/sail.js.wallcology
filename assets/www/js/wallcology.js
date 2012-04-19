@@ -1090,7 +1090,8 @@ WallCology = {
 					investigationTemperature:invViewSelectedTemperature, investigationLightLevel:invViewSelectedLightLevel, investigationHumidity:invViewSelectedHumidity})
 			})
 			
-			$('#investigations-datatable tbody tr').live('click', function() {
+			//$('#investigations-datatable tbody tr').live('click', function() {
+            $('#investigations-datatable').delegate("tbody tr", "click", function() {
 				$('#view-investigations').hide()
 				$('#view-investigations-details').show()
 				detailsMotivation = $(this).children(':first').text()
